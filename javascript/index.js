@@ -1,5 +1,5 @@
 const chronometer = new Chronometer();
-
+let intervalId = null;
 // get the buttons:
 const btnLeftElement = document.getElementById('btnLeft');
 const btnRightElement = document.getElementById('btnRight');
@@ -14,6 +14,7 @@ const milUniElement = document.getElementById('milUni');
 const splitsElement = document.getElementById('splits');
 
 function printTime() {
+  clearInterval(intervalId);
   printMinutes();
   printSeconds();
   printMilliseconds();
@@ -33,9 +34,19 @@ function printSeconds() {
 
 // ==> BONUS
 function printMilliseconds() {
-  let milliSeconds = chronometer.computeTwoDigitNumber(chronometer.getMilliSeconds());
-  milDecElement.innerText = milliSeconds[0];
-  milUniElement.innerText = milliSeconds[1];
+  let count = 0;
+  intervalId = setInterval(() => {
+    let res = count.toString().split('');
+    res[1] = count % 10;
+    
+    if (res[1] === 0) {
+      res[0] = (parseInt(res[0]) + 1) % 10;
+    }
+
+    milDecElement.innerText = res[0];
+    milUniElement.innerText = res[1];
+    count++;
+  }, 1);
 }
 
 function printSplit() {
@@ -78,6 +89,7 @@ btnLeftElement.addEventListener('click', () => {
   } else {
     setStartBtn();
     setResetBtn();
+    clearInterval(intervalId);
     chronometer.stop();
   }
 });
@@ -92,6 +104,7 @@ btnRightElement.addEventListener('click', () => {
     secDecElement.innerText = '0';
     milDecElement.innerText = '0';
     milUniElement.innerText = '0';
+    clearInterval(intervalId);
     clearSplits();
   } else {
     printSplit();
